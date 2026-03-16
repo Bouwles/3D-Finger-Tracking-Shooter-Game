@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAND CANNON</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      font-family: 'Courier New', Courier, monospace;
+      user-select: none;
+    }
+
+    #gameCanvas {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      cursor: none;
+    }
+
+    /* ── PiP Camera Window ── */
+    #pipCanvas {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 240px;
+      height: 180px;
+      border: 1.5px solid rgba(0, 255, 255, 0.5);
+      border-radius: 6px;
+      z-index: 30;
+      background: #000;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+    }
+
+    /* ── HUD ── */
+    #hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #scorePanel {
+      position: absolute;
+      top: 22px;
+      right: 28px;
+      text-align: right;
+    }
+    #scoreLabel {
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: rgba(0, 255, 255, 0.5);
+    }
+    #scoreValue {
+      font-size: 52px;
+      font-weight: bold;
+      color: #00ffff;
+      line-height: 1;
+      text-shadow: 0 0 16px #00ffff, 0 0 32px rgba(0,255,255,0.4);
+    }
+
+    #comboPanel {
+      position: absolute;
+      top: 98px;
+      right: 28px;
+      text-align: right;
+      font-size: 13px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #comboPanel.show { opacity: 1; }
+
+    #gestureStatus {
+      position: absolute;
+      top: 22px;
+      left: 28px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #333;
+    }
+    #gestureStatus.tracking {
+      color: #00ff41;
+      text-shadow: 0 0 8px #00ff41;
+    }
+    #gestureStatus.ready {
+      color: #ffaa00;
+      text-shadow: 0 0 8px #ffaa00;
+    }
+
+    #instructPanel {
+      position: absolute;
+      bottom: 220px;
+      left: 26px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #2a2a2a;
+      line-height: 2;
+    }
+
+    /* ── Init Overlay ── */
+    #initOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #00ffff;
+    }
+
+    #initOverlay h1 {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: 12px;
+      text-shadow: 0 0 30px #00ffff, 0 0 60px rgba(0,255,255,0.3);
+      margin-bottom: 8px;
+    }
+
+    #initOverlay .tagline {
+      font-size: 12px;
+      letter-spacing: 6px;
+      color: rgba(0, 255, 255, 0.4);
+      margin-bottom: 60px;
+    }
+
+    #initStatus {
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    #initInstructions {
+      margin-top: 48px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #333;
+      line-height: 2.2;
+      text-align: center;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    #video { display: none; }
+  </style>
+</head>
+<body>
+
+  <canvas id="gameCanvas"></canvas>
+  <canvas id="pipCanvas" width="240" height="180"></canvas>
+  <video id="video" autoplay playsinline muted></video>
+
+  <div id="hud">
+    <div id="scorePanel">
+      <div id="scoreLabel">SCORE</div>
+      <div id="scoreValue">0</div>
+    </div>
+    <div id="comboPanel"></div>
+    <div id="gestureStatus">● NO HAND</div>
+    <div id="instructPanel">
+      AIM &nbsp;&nbsp;&nbsp;│ point index finger at screen<br>
+      SHOOT │ snap thumb down (trigger pull)
+    </div>
+  </div>
+
+  <div id="initOverlay">
+    <h1>HAND CANNON</h1>
+    <div class="tagline">GESTURE SHOOTING EXPERIENCE</div>
+    <div id="initStatus">LOADING HAND TRACKING…</div>
+    <div id="initInstructions">
+      Allow camera access when prompted<br>
+      Point your index finger to aim<br>
+      Snap thumb DOWN to fire
+    </div>
+  </div>
+
+  <!-- MediaPipe via jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Game modules (loaded in dependency order) -->
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/handTracking.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>
